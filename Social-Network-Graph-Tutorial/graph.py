@@ -6,6 +6,7 @@ A helper class for the Graph class that defines vertices and vertex neighbors.
 """
 
 from sys import argv
+from collections import deque
 
 
 class Vertex(object):
@@ -48,11 +49,6 @@ class Graph:
         self.vertList = {}
         self.numVertices = 0
 
-    def __str__(self):
-        for item in self.vertList:
-            print(item)
-        return 'done'
-
     def addVertex(self, key):
         """add a new vertex object to the graph with
         the given key and return the vertex
@@ -78,6 +74,35 @@ class Graph:
             self.vertList[vertexOne].addNeighbor(
                 self.vertList[vertexTwo], cost)
 
+    def BFS(self, vertex):
+        """searches the graph and returns the nodes at n level depth"""
+        queue = [(vertex, 0)]
+        visited = {}
+        while queue:
+            vertex, level = queue.pop(0)
+            if vertex not in visited:
+                visited[vertex] = level
+            for neighbor in self.vertList[vertex].neighbors:
+                if neighbor not in visited:
+                    queue.append((neighbor.getId(), level + 1))
+        return visited 
+    
+    def shortest_path(self, vertex_one, vertex_two):
+        """searches the graph and returns the nodes at n level depth"""
+        queue = [(vertex_one, 0)]
+        visited = {}
+        while queue:
+            vertex, level = queue.pop(0)
+            if vertex not in visited:
+                visited[vertex] = level
+            for neighbor in self.vertList[vertex].neighbors:
+                if neighbor.getId() is vertex_two:
+                    visited[vertex_two] = level + 1
+                    return visited
+                if neighbor not in visited:
+                    queue.append((neighbor.getId(), level + 1))
+        return visited 
+
     def getVertices(self):
         """return all the vertices in the graph"""
         return self.vertList.keys()
@@ -88,119 +113,26 @@ class Graph:
         """
         return iter(self.vertList.values())
 
+g = Graph()
 
-def parse_data():
-    vertices = open(argv[1], 'r')
-    graph_data = vertices.read().split()
-    vertices.close()
-    return graph_data
+# Add your friends
+g.addVertex(1)
+g.addVertex(2)
+g.addVertex(3)
+g.addVertex(4)
+g.addVertex(5)
+g.addVertex(6)
+g.addVertex(7)
+g.addVertex(8)
+g.addVertex(9)
+g.addVertex(10)
 
+# Add connections (non weighted edges for now)
 
-def create_graph(graph_data):
-    if graph_data[0] is 'G':
-        graph = Graph()
+g.addEdge(1,2)
+g.addEdge(1,3)
+g.addEdge(2,4)
+g.addEdge(2,6)
+g.addEdge(2,5)
 
-    for vertex in graph_data[1].split(','):
-        graph.addVertex(vertex)
-
-    counter = 0
-
-    for word in graph_data[2:]:
-        counter += 1
-        graph.addEdge(word[1], word[3],
-                      word[5:].replace(')', ''))
-
-    print("# Vertices:", len(graph.getVertices()))
-    print("# Edges: ", counter, "\n")
-    print("Edge List:")
-    for v in graph:
-        for w in v.neighbors:
-            print("(%s ,%s, %s)" %
-                  (v.getId(), w.getId(), v.getEdgeWeight(w)))
-
-    return graph
-
-
-data = parse_data()
-graph = create_graph(data)
-if __name__ == "__main__":
-
-    # Challenge 1: Create the graph
-
-    g = Graph()
-
-    # Add your friends
-    g.addVertex("Karen")
-    g.addVertex("Jordan")
-    g.addVertex("Hannah")
-    g.addVertex("Zakye")
-    g.addVertex("William")
-    g.addVertex("Salvador")
-    g.addVertex("Dacio")
-    g.addVertex("Erika")
-    g.addVertex("Deontae")
-    g.addVertex('Xavier')
-
-    # Add connections (non weighted edges for now)
-
-    g.addEdge('William', 'Salvador')
-    g.addEdge("William", "Karen")
-    g.addEdge("William", "Erika")
-    g.addEdge("William", "Hannah")
-    g.addEdge("William", "Jordan")
-    g.addEdge("William", "Hannah")
-    g.addEdge("William", "Dacio")
-    g.addEdge("William", "Salvador")
-    g.addEdge("William", "Xavier")
-
-    g.addEdge("Jordan", "Hannah")
-    g.addEdge("Jordan", "Karen")
-    g.addEdge("Jordan", "Zakye")
-    g.addEdge("Jordan", "Deontae")
-    g.addEdge("Jordan", "Xavier")
-
-    g.addEdge("Hannah", 'Erika')
-    g.addEdge("Hannah", "Jordan")
-    g.addEdge("Hannah", "Karen")
-    g.addEdge("Hannah", "Zakye")
-    g.addEdge("Hannah", "Deontae")
-    g.addEdge("Hannah", "Xavier")
-
-    g.addEdge("Erika", 'Hannah')
-    g.addEdge("Erika", "Jordan")
-    g.addEdge("Erika", "Karen")
-    g.addEdge("Erika", "Zakye")
-    g.addEdge("Erika", "Deontae")
-    g.addEdge("Erika", "Xavier")
-
-    g.addEdge("Dacio", "Salvador")
-    g.addEdge("Dacio", "Erika")
-
-    g.addEdge("Salvador", "Dacio")
-    g.addEdge("Salvador", "Erika")
-
-    g.addEdge('Xavier', 'Erika')
-    g.addEdge('Xavier', 'Zakye')
-    g.addEdge('Xavier', 'Deontae')
-    g.addEdge('Xavier', 'Zakye')
-    g.addEdge('Xavier', 'Karen')
-    g.addEdge('Xavier', 'Hannah')
-    g.addEdge('Xavier', 'Jordan')
-
-    g.addVertex('Hannah')
-    g.addVertex('Ciara')
-    g.addVertex('Kyle')
-
-    g.addEdge('Hannah', 'Ciara')
-    g.addEdge('Ciara', 'Kyle')
-
-
-'''
-# Challenge 1: Output the vertices & edges
-# Print vertices
-print("The vertices are: ", g.getVertices(), "\n")
-print("The edges are: ")
-for v in g:
-    for w in v.getNeighbors():
-        print("( %s , %s )" % (v.getId(), w.getId()))
-'''
+print(g.shortest_path(1,6)) 
