@@ -32,6 +32,10 @@ class Vertex(object):
     def getNeighbors(self):
         """return the neighbors of this vertex"""
         return self.neighbors
+    
+    def getNeighborsId(self):
+        """return the neighbors of this vertex"""
+        return [neighbor.getId() for neighbor in self.neighbors.keys()]
 
     def getId(self):
         """return the id of this vertex"""
@@ -86,6 +90,17 @@ class Graph:
                 if neighbor not in visited:
                     queue.append((neighbor.getId(), level + 1))
         return visited 
+
+    def clique(self, vertex):
+        vertices = self.getVertices()
+        clique = set([vertex])
+        for v in vertices:
+            vertex = self.vertList[v]
+            neighbors = set(vertex.getNeighborsId())
+            if clique.issubset(neighbors):
+                clique.add(v)
+        return clique
+             
     
     def shortest_path(self, vertex_one, vertex_two):
         """searches the graph and returns the nodes at n level depth"""
@@ -131,8 +146,12 @@ g.addVertex(10)
 
 g.addEdge(1,2)
 g.addEdge(1,3)
+g.addEdge(2,1)
+g.addEdge(2,3)
+g.addEdge(3,2)
+g.addEdge(3,1)
 g.addEdge(2,4)
 g.addEdge(2,6)
 g.addEdge(2,5)
 
-print(g.shortest_path(1,6)) 
+print(g.clique(1))
